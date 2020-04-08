@@ -37,9 +37,16 @@ function getGameMap() {
 }
 
 function drawGame() {
-    if (ctx == null) { return; }
+    if (ctx == null) { return false; }
 
-    gameMap = getGameMap();
+    let newGameMap = getGameMap();
+
+    if (JSON.stringify(gameMap) === JSON.stringify(newGameMap)) {
+        return false;
+    } else {
+        gameMap = newGameMap;
+    }
+
     for (let y = 0; y < mapH; ++y) {
         for (let x = 0; x < mapW; ++x) {
             if (gameMap[((y * mapW) + x)] === 0) {
@@ -51,14 +58,19 @@ function drawGame() {
             ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
         }
     }
+    return true;
 }
 
 function myLoop () {
     setTimeout(function () {
-            drawGame();
-            myLoop();
+            if (drawGame()) {
+                myLoop();
+            }
+            else {
+                alert("Game finished!")
+            }
         },
-        300);
+        100);
 }
 
 myLoop();

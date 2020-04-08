@@ -10,13 +10,13 @@ const gridHeight = 20
 const gridWidth = 20
 const threshold = 0.3
 
-var g = CreateRandomGrid(gridHeight, gridWidth, threshold)
-
 func main() {
 	http.HandleFunc("/next", getNextStepHttp)
 	http.HandleFunc("/init", initHttp)
 	_ = http.ListenAndServe(":8090", nil)
 }
+
+var g = &Grid{}
 
 func getNextStepHttp(writer http.ResponseWriter, request *http.Request) {
 	g = g.NextStep()
