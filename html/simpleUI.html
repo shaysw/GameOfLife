@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        var ctx = null;
+        var tileW = 40, tileH = 40;
+        var mapW = 10, mapH = 10;
+        var currentSecond = 0, frameCount = 0, framesLastSecond = 0;
+
+        window.onload = function () {
+            ctx = document.getElementById('game').getContext("2d");
+            initGameMap();
+            ctx.font = "bold 10pt sans-serif";
+        };
+
+        window.onbeforeunload = function () {
+            ctx = document.getElementById('game').getContext("2d");
+            initGameMap();
+            ctx.font = "bold 10pt sans-serif";
+            return null;
+        };
+
+        function initGameMap() {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", "http://localhost:8090/init?time="+new Date().getTime(), false ); // false for synchronous request
+            xmlHttp.send( null );
+            var a = xmlHttp.responseText;
+            // console.debug(a);
+            console.debug(JSON.parse(a));
+
+            return JSON.parse(a);
+        }
+
+        function getGameMap() {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", "http://localhost:8090/next?time="+new Date().getTime(), false ); // false for synchronous request
+            xmlHttp.send( null );
+            var a = xmlHttp.responseText;
+            // console.debug(a);
+            console.debug(JSON.parse(a));
+
+            return JSON.parse(a);
+        }
+
+        function drawGame() {
+            if (ctx == null) { return; }
+
+            gameMap = getGameMap();
+            for (var y = 0; y < mapH; ++y) {
+                for (var x = 0; x < mapW; ++x) {
+                    switch (gameMap[((y * mapW) + x)]) {
+                        case 0:
+                            ctx.fillStyle = "#000000";
+                            break;
+                        default:
+                            ctx.fillStyle = "#ccffcc";
+                    }
+
+                    ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
+                }
+            }
+            ctx.fillStyle = "#ff0000";
+            // ctx.fillText("FPS: " + framesLastSecond, 10, 20);
+
+            // requestAnimationFrame(drawGame);
+        }
+
+        function myLoop () {           //  create a loop function
+        setTimeout(function () { 
+            if (true) {            //  if the counter < 10, call the loop function
+                    drawGame(); 
+                    myLoop();             //  ..  again which will trigger another 
+                }                        //  ..  setTimeout()
+            }, 
+            300);
+        };
+
+        myLoop(); 
+
+
+    </script>
+
+</head>
+
+<body>
+
+    <canvas id="game" width="400" height="400"></canvas>
+
+</body>
+
+</html>
