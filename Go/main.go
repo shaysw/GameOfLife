@@ -163,6 +163,7 @@ func getNextStepHttp(writer http.ResponseWriter, request *http.Request) {
 	g = g.NextStep()
 	flat := flatten(g)
 	bytes, _ := json.Marshal(flat)
+	writer.Header().Set("Access-Control-Allow-Origin", request.Header.Get("Origin"))
 	fmt.Fprint(writer, string(bytes))
 }
 
@@ -171,6 +172,7 @@ func initHttp(writer http.ResponseWriter, request *http.Request) {
 	g = CreateRandomGrid(10, 10, 0.3)
 	flat := flatten(g)
 	bytes, _ := json.Marshal(flat)
+	writer.Header().Set("Access-Control-Allow-Origin", request.Header.Get("Origin"))
 	fmt.Fprint(writer, string(bytes))
 }
 
