@@ -6,7 +6,11 @@ import (
 	"net/http"
 )
 
-var g = CreateRandomGrid(10, 10, 0.3)
+const gridHeight = 20
+const gridWidth = 20
+const threshold = 0.3
+
+var g = CreateRandomGrid(gridHeight, gridWidth, threshold)
 
 func main() {
 	http.HandleFunc("/next", getNextStepHttp)
@@ -24,7 +28,7 @@ func getNextStepHttp(writer http.ResponseWriter, request *http.Request) {
 
 func initHttp(writer http.ResponseWriter, request *http.Request) {
 
-	g = CreateRandomGrid(10, 10, 0.3)
+	g = CreateRandomGrid(gridHeight, gridWidth, threshold)
 	flat := flatten(g)
 	bytes, _ := json.Marshal(flat)
 	writer.Header().Set("Access-Control-Allow-Origin", request.Header.Get("Origin"))

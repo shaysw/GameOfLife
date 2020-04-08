@@ -1,6 +1,6 @@
 let ctx = null;
 const tileW = 40, tileH = 40;
-const mapW = 10, mapH = 10;
+const mapW = 20, mapH = 20;
 let gameMap;
 
 window.onload = function () {
