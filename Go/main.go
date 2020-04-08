@@ -9,13 +9,12 @@ import (
 	"time"
 )
 
-var g = CreateRandomGrid(10,10, 0.3)
-
+var g = CreateRandomGrid(10, 10, 0.3)
 
 type Grid struct {
-	grid [][]bool
+	grid   [][]bool
 	height int
-	width int
+	width  int
 }
 
 func createRandomGrid(height int, width int, threshold float32) [][]bool {
@@ -30,7 +29,7 @@ func createRandomGrid(height int, width int, threshold float32) [][]bool {
 	return ans
 }
 
-func (oldGrid Grid) NextStep() *Grid{
+func (oldGrid Grid) NextStep() *Grid {
 	newGrid := make([][]bool, oldGrid.height)
 	for i := 0; i < oldGrid.height; i++ {
 		newGrid[i] = make([]bool, oldGrid.width)
@@ -42,7 +41,7 @@ func (oldGrid Grid) NextStep() *Grid{
 		width:  oldGrid.width,
 	}
 
-	for i := 0; i < oldGrid.height; i++{
+	for i := 0; i < oldGrid.height; i++ {
 		for j := 0; j < oldGrid.width; j++ {
 			nextGrid.grid[i][j] = SlotNextValue(oldGrid.grid[i][j], &oldGrid, i, j)
 
@@ -61,7 +60,7 @@ func SlotNextValue(currentSlotValue bool, g *Grid, i int, j int) bool {
 		return false
 	}
 	if liveNeighbours == 3 {
-	return true
+		return true
 	}
 	return false
 
@@ -120,7 +119,7 @@ func GetNumberOfLiveNeighbours(g *Grid, i int, j int) int {
 	return ans
 }
 
-func CreateRandomGrid(height int, width int, threshold float32) *Grid{
+func CreateRandomGrid(height int, width int, threshold float32) *Grid {
 	grid := Grid{
 		grid:   createRandomGrid(height, width, threshold),
 		height: height,
@@ -147,7 +146,7 @@ func ToStringArray(arr []bool) []string {
 
 func (g Grid) String() string {
 	var sb strings.Builder
-	for _, gridRow := range g.grid{
+	for _, gridRow := range g.grid {
 		sb.WriteString(strings.Join(ToStringArray(gridRow), " "))
 		sb.WriteString("\n")
 	}
@@ -161,18 +160,18 @@ func main() {
 }
 
 func getNextStepHttp(writer http.ResponseWriter, request *http.Request) {
-		g = g.NextStep()
-		flat := flatten(g)
-		bytes, _ := json.Marshal(flat)
-		fmt.Fprint(writer, string(bytes))
+	g = g.NextStep()
+	flat := flatten(g)
+	bytes, _ := json.Marshal(flat)
+	fmt.Fprint(writer, string(bytes))
 }
 
 func initHttp(writer http.ResponseWriter, request *http.Request) {
 
-		g = CreateRandomGrid(10,10, 0.3)
-		flat := flatten(g)
-		bytes, _ := json.Marshal(flat)
-		fmt.Fprint(writer, string(bytes))
+	g = CreateRandomGrid(10, 10, 0.3)
+	flat := flatten(g)
+	bytes, _ := json.Marshal(flat)
+	fmt.Fprint(writer, string(bytes))
 }
 
 func flatten(g *Grid) []int {
@@ -184,7 +183,7 @@ func flatten(g *Grid) []int {
 		}
 	}
 
-	for _, b := range bools{
+	for _, b := range bools {
 		s := 0
 		if b {
 			s = 1
