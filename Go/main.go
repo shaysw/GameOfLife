@@ -8,7 +8,6 @@ import (
 
 const gridHeight = 20
 const gridWidth = 20
-const threshold = 0.3
 
 func main() {
 	http.HandleFunc("/next", getNextStepHttp)
@@ -27,7 +26,9 @@ func getNextStepHttp(writer http.ResponseWriter, request *http.Request) {
 }
 
 func initHttp(writer http.ResponseWriter, request *http.Request) {
-
+	var v map[string]int
+	json.NewDecoder(request.Body).Decode(&v)
+	threshold := float32(v["threshold"]) / 100.0
 	g = CreateRandomGrid(gridHeight, gridWidth, threshold)
 	flat := flatten(g)
 	bytes, _ := json.Marshal(flat)

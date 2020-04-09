@@ -3,12 +3,22 @@
 
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="../js/gridUi.js">
-    </script>
+    <script src="../js/gridUi.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
 </head>
 
 <body>
-    <canvas id="game" width="1000" height="1000"></canvas>
+    <h1 align="center">Welcome to Conway's Game Of Life, powered by Go!</h1>
+    <div>
+
+        <p>Game Settings</p>
+        <form id="settingsForm" action="../js/gridUI.js">
+            % of living cells at start : <input id="threshold" type="number"><br><br>
+            <input type="button" onclick="submitSettings()" value="Start!">
+        </form>
+        <canvas id="game" width=800" height="800"></canvas>
+    </div>
+
 </body>
 
 </html>
