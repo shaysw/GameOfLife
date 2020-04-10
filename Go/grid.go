@@ -7,9 +7,13 @@ import (
 )
 
 type Grid struct {
-	grid   [][]bool
-	height int
-	width  int
+	grid                                   [][]bool
+	height                                 int
+	width                                  int
+	liveSlotMinLiveNeighboursToKeepAlive   int
+	liveSlotMaxLiveNeighboursToKeepAlive   int
+	deadSlotMinLiveNeighboursToBringToLife int
+	deadSlotMaxLiveNeighboursToBringToLife int
 }
 
 func createRandomGrid(height int, width int, threshold float32) [][]bool {
@@ -31,9 +35,13 @@ func (g Grid) NextStep() *Grid {
 	}
 
 	nextGrid := Grid{
-		grid:   newGrid,
-		height: g.height,
-		width:  g.width,
+		grid:                                   newGrid,
+		height:                                 g.height,
+		width:                                  g.width,
+		liveSlotMinLiveNeighboursToKeepAlive:   g.liveSlotMinLiveNeighboursToKeepAlive,
+		liveSlotMaxLiveNeighboursToKeepAlive:   g.liveSlotMaxLiveNeighboursToKeepAlive,
+		deadSlotMinLiveNeighboursToBringToLife: g.deadSlotMinLiveNeighboursToBringToLife,
+		deadSlotMaxLiveNeighboursToBringToLife: g.deadSlotMaxLiveNeighboursToBringToLife,
 	}
 
 	for i := 0; i < g.height; i++ {
@@ -48,13 +56,15 @@ func (g Grid) NextStep() *Grid {
 
 func SlotNextValue(currentSlotValue bool, g *Grid, i int, j int) bool {
 	liveNeighbours := GetNumberOfLiveNeighbours(g, i, j)
+	// live slots handling
 	if currentSlotValue {
-		if liveNeighbours == 2 || liveNeighbours == 3 {
+		if liveNeighbours >= g.liveSlotMinLiveNeighboursToKeepAlive && liveNeighbours <= g.liveSlotMaxLiveNeighboursToKeepAlive {
 			return true
 		}
 		return false
 	}
-	if liveNeighbours == 3 {
+	// dead slots handling
+	if liveNeighbours >= g.deadSlotMinLiveNeighboursToBringToLife && liveNeighbours <= g.deadSlotMaxLiveNeighboursToBringToLife {
 		return true
 	}
 	return false
@@ -114,11 +124,22 @@ func GetNumberOfLiveNeighbours(g *Grid, i int, j int) int {
 	return ans
 }
 
-func CreateRandomGrid(height int, width int, threshold float32) *Grid {
+func InitializeGrid(
+	height int,
+	width int,
+	threshold float32,
+	liveSlotMinLiveNeighboursToKeepAlive int,
+	liveSlotMaxLiveNeighboursToKeepAlive int,
+	deadSlotMinLiveNeighboursToBringToLife int,
+	deadSlotMaxLiveNeighboursToBringToLife int) *Grid {
 	grid := Grid{
-		grid:   createRandomGrid(height, width, threshold),
-		height: height,
-		width:  width,
+		grid:                                   createRandomGrid(height, width, threshold),
+		height:                                 height,
+		width:                                  width,
+		liveSlotMinLiveNeighboursToKeepAlive:   liveSlotMinLiveNeighboursToKeepAlive,
+		liveSlotMaxLiveNeighboursToKeepAlive:   liveSlotMaxLiveNeighboursToKeepAlive,
+		deadSlotMinLiveNeighboursToBringToLife: deadSlotMinLiveNeighboursToBringToLife,
+		deadSlotMaxLiveNeighboursToBringToLife: deadSlotMaxLiveNeighboursToBringToLife,
 	}
 	return &grid
 }

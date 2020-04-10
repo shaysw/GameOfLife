@@ -13,8 +13,20 @@
 
         <p>Game Settings</p>
         <form id="settingsForm" action="../js/gridUI.js">
-            % of living cells at start : <input id="threshold" type="number"><br><br>
-            <input type="button" onclick="submitSettings()" value="Start!">
+            * % of living cells at start : <input id="threshold" type="number"><br><br>
+            * Living cells will continue living in the next step if they have more than
+            <input id="liveSlotMinLiveNeighboursToKeepAlive" type="number" value="2">
+            and less than
+            <input id="liveSlotMaxLiveNeighboursToKeepAlive" type="number" value="3">
+            neighbours, otherwise, they die<br><br>
+            * Dead cells will revive in the next step if they have more than
+            <input id="deadSlotMinLiveNeighboursToBringToLife" type="number" value="3">
+            and less than
+            <input id="deadSlotMaxLiveNeighboursToBringToLife" type="number" value="3">
+            neighbours, otherwise, they remain dead<br><br>
+            <input type="button" onclick="start()" value="Start!">
+            <input id="pauseButton" type="button" onclick="pause()" value="Pause">
+            <input type="button" onclick="nextStep()" value="Next step">
         </form>
         <canvas id="game" width=800" height="800"></canvas>
     </div>

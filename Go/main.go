@@ -29,7 +29,18 @@ func initHttp(writer http.ResponseWriter, request *http.Request) {
 	var v map[string]int
 	json.NewDecoder(request.Body).Decode(&v)
 	threshold := float32(v["threshold"]) / 100.0
-	g = CreateRandomGrid(gridHeight, gridWidth, threshold)
+	liveSlotMinLiveNeighboursToKeepAlive := v["liveSlotMinLiveNeighboursToKeepAlive"]
+	liveSlotMaxLiveNeighboursToKeepAlive := v["liveSlotMaxLiveNeighboursToKeepAlive"]
+	deadSlotMinLiveNeighboursToBringToLife := v["deadSlotMinLiveNeighboursToBringToLife"]
+	deadSlotMaxLiveNeighboursToBringToLife := v["deadSlotMaxLiveNeighboursToBringToLife"]
+	g = InitializeGrid(
+		gridHeight,
+		gridWidth,
+		threshold,
+		liveSlotMinLiveNeighboursToKeepAlive,
+		liveSlotMaxLiveNeighboursToKeepAlive,
+		deadSlotMinLiveNeighboursToBringToLife,
+		deadSlotMaxLiveNeighboursToBringToLife)
 	flat := flatten(g)
 	bytes, _ := json.Marshal(flat)
 	writer.Header().Set("Access-Control-Allow-Origin", request.Header.Get("Origin"))
