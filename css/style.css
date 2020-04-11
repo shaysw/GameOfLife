@@ -39,7 +39,7 @@ input[type=number] {
     font-size: medium;
 }
 
-.game-finished-text {
+.info-window-text {
     line-height: 700px;
     opacity: 0;
     text-align: center;

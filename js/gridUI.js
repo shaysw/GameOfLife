@@ -16,8 +16,8 @@ window.onbeforeunload = function () {
 
 function nextStep() {
     if (isGameFinished) {
-        document.getElementById('gameFinishedText').style.opacity = 1.0;
-        // alert("No changes will be further made to the grid - Game finished!");
+        setInfoWindowTextValue("Game Finished");
+        setInfoWindowTextOpacity(1);
         return;
     }
     if (!stopLoop){
@@ -35,30 +35,51 @@ function pause(){
     }
 }
 
-function start() {
-    document.getElementById('gameFinishedText').style.opacity = 0.0;
-    isGameFinished = false;
-    stopLoop = false;
-    let pauseButton = document.getElementById("pauseButton");
-    pauseButton.value = "Pause";
+function setInfoWindowTextOpacity(opacity) {
+    document.getElementById('infoWindowText').style.opacity = opacity;
+}
 
+function setInfoWindowTextValue(text) {
+    document.getElementById('infoWindowText').innerText = text;
+}
+
+function start() {
+    initializeNewGame();
     getSettingsFromForm();
     sendInitRequest();
 
-    // to finish all previous loops which may be running if user presses "start" while game is still running
-    // stopLoop = false;
+    function initializeNewGame() {
+        setInfoWindowTextOpacity(0);
+        setInfoWindowTextValue("");
+        isGameFinished = false;
+        stopLoop = false;
+        let pauseButton = document.getElementById("pauseButton");
+        pauseButton.value = "Pause";
+    }
+
     function sendInitRequest() {
-        let xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-            if (xmlHttp.status == 200){
-                let responseText = xmlHttp.response;
-                currentGameMap = JSON.parse(responseText);
-                // shouldDrawGame = true;
-                myLoop();
-            }
-        };
-        xmlHttp.open( "POST", `http://localhost:8090/init?time=${new Date().getTime()}`, false ); // false for synchronous request
-        xmlHttp.send(JSON.stringify(settings));
+        try{
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.status == 200){
+                    setInfoWindowTextOpacity(0);
+                    setInfoWindowTextValue("");
+                    let responseText = xmlHttp.response;
+                    currentGameMap = JSON.parse(responseText);
+                    myLoop();
+                }
+                else {
+                    setInfoWindowTextValue("Network error!");
+                    setInfoWindowTextOpacity(1);
+                }
+            };
+            xmlHttp.open( "POST", `http://localhost:8090/init?time=${new Date().getTime()}`, false ); // false for synchronous request
+            xmlHttp.send(JSON.stringify(settings));
+        }
+        catch (e) {
+            setInfoWindowTextValue("Network error!");
+            setInfoWindowTextOpacity(1);
+        }
         // todo: maybe raise exception if error show alert
 
     }
@@ -103,11 +124,17 @@ function start() {
 
 
 function getGameMapNextStep() {
-    let xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", `http://localhost:8090/next?time=${new Date().getTime()}`, false ); // false for synchronous request
-    xmlHttp.send( null );
-    let responseText = xmlHttp.response;
-    return JSON.parse(responseText);
+    try{
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", `http://localhost:8090/next?time=${new Date().getTime()}`, false ); // false for synchronous request
+        xmlHttp.send( null );
+        let responseText = xmlHttp.response;
+        return JSON.parse(responseText);
+    }
+    catch (e) {
+        setInfoWindowTextValue("Network error!");
+        setInfoWindowTextOpacity(1);
+    }
 }
 
 function drawGame() {
@@ -142,18 +169,18 @@ function drawGame() {
 
 function myLoop () {
     setTimeout(function () {
-        if (stopLoop){
-            return;
-        }
-        if (isGameFinished) {
-            stopLoop = true;
-            document.getElementById('gameFinishedText').style.opacity = 1.0;
-            // alert("No changes will be further made to the grid - Game finished!");
-            return;
-        }
-       drawGame();
-       myLoop();
-    },
-    100);
+            if (stopLoop){
+                return;
+            }
+            if (isGameFinished) {
+                stopLoop = true;
+                setInfoWindowTextOpacity(1);
+                setInfoWindowTextValue("Game Finished");
+                return;
+            }
+            drawGame();
+            myLoop();
+        },
+        100);
 }
 
