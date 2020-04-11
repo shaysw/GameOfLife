@@ -5,6 +5,7 @@ let currentGameMap;
 let settings = { };
 let isGameFinished = false;
 let stopLoop = false;
+let goServerUrl = "http://localhost:8090";
 
 window.onload = function () {
     ctx = document.getElementById('game').getContext("2d");
@@ -73,7 +74,7 @@ function start() {
                     setInfoWindowTextOpacity(1);
                 }
             };
-            xmlHttp.open( "POST", `http://localhost:8090/init?time=${new Date().getTime()}`, false ); // false for synchronous request
+            xmlHttp.open( "POST", `${goServerUrl}/init?time=${new Date().getTime()}`, false ); // false for synchronous request
             xmlHttp.send(JSON.stringify(settings));
         }
         catch (e) {
@@ -126,7 +127,7 @@ function start() {
 function getGameMapNextStep() {
     try{
         let xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", `http://localhost:8090/next?time=${new Date().getTime()}`, false ); // false for synchronous request
+        xmlHttp.open( "GET", `${goServerUrl}/next?time=${new Date().getTime()}`, false ); // false for synchronous request
         xmlHttp.send( null );
         let responseText = xmlHttp.response;
         return JSON.parse(responseText);
