@@ -7,6 +7,11 @@ canvas {
 h3 {
     margin: 10px;
 }
+
+h1 {
+    margin: 0px;
+}
+
 input[type=number] {
     width: 40px;
 }
@@ -15,21 +20,27 @@ input[type=number] {
     float: left;
 }
 
-.left, .right {
+.left{
     width: 25%;
+    height: 100%;
 }
+
+.right {
+      width: 25%;
+      height: 700px;
+    vertical-align: middle;
+  }
 
 .middle {
     width: 50%;
 }
 
-/* Clear floats after the columns */
-.row:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
 .rule-row-text {
     font-size: medium;
+}
+
+.game-finished-text {
+    line-height: 700px;
+    opacity: 0;
+    text-align: center;
 }

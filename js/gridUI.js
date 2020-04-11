@@ -3,55 +3,57 @@ const tileW = 35, tileH = 35;
 const mapW = 20, mapH = 20;
 let currentGameMap;
 let settings = { };
-let shouldDrawGame = false;
-let shouldDisplayAlert = false;
-let shouldPause = false;
+let isGameFinished = false;
+let stopLoop = false;
 
 window.onload = function () {
     ctx = document.getElementById('game').getContext("2d");
-    // initGameMap();
-    ctx.font = "bold 10pt sans-serif";
 };
 
 window.onbeforeunload = function () {
     ctx = document.getElementById('game').getContext("2d");
-    // initGameMap();
-    ctx.font = "bold 10pt sans-serif";
-    return null;
 };
 
 function nextStep() {
-    if (!shouldPause){
+    if (isGameFinished) {
+        document.getElementById('gameFinishedText').style.opacity = 1.0;
+        // alert("No changes will be further made to the grid - Game finished!");
+        return;
+    }
+    if (!stopLoop){
         pause();
     }
     drawGame();
 }
 
 function pause(){
-    if (!shouldDrawGame){
-        return;
-    }
-    shouldPause = !shouldPause;
+    stopLoop = !stopLoop;
     let pauseButton = document.getElementById("pauseButton");
-    pauseButton.value = shouldPause ? "Continue" : "Pause";
-    if (!shouldPause){
+    pauseButton.value = stopLoop ? "Continue" : "Pause";
+    if (!stopLoop){
         myLoop();
     }
 }
 
 function start() {
-    shouldDrawGame = false;
+    document.getElementById('gameFinishedText').style.opacity = 0.0;
+    isGameFinished = false;
+    stopLoop = false;
+    let pauseButton = document.getElementById("pauseButton");
+    pauseButton.value = "Pause";
+
     getSettingsFromForm();
-    shouldDisplayAlert = true;
     sendInitRequest();
 
+    // to finish all previous loops which may be running if user presses "start" while game is still running
+    // stopLoop = false;
     function sendInitRequest() {
         let xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
             if (xmlHttp.status == 200){
                 let responseText = xmlHttp.response;
                 currentGameMap = JSON.parse(responseText);
-                shouldDrawGame = true;
+                // shouldDrawGame = true;
                 myLoop();
             }
         };
@@ -109,44 +111,48 @@ function getGameMapNextStep() {
 }
 
 function drawGame() {
-    if (ctx == null) { return false; }
-
-    for (let y = 0; y < mapH; ++y) {
-        for (let x = 0; x < mapW; ++x) {
-            if (currentGameMap[((y * mapW) + x)] === 0) {
-                ctx.fillStyle = "#000000";
-            } else {
-                ctx.fillStyle = "#ccffcc";
-            }
-
-            ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
-        }
+    if (ctx == null)
+    {
+        return false;
     }
+
+    fillCanvasWithGameMap(currentGameMap);
 
     let newGameMap = getGameMapNextStep();
     if (JSON.stringify(currentGameMap) === JSON.stringify(newGameMap)) {
-        shouldDrawGame = false;
+        isGameFinished = true;
     } else {
         currentGameMap = newGameMap;
-        shouldDrawGame = true;
+    }
+
+    function fillCanvasWithGameMap(gameMap) {
+        for (let y = 0; y < mapH; ++y) {
+            for (let x = 0; x < mapW; ++x) {
+                if (gameMap[((y * mapW) + x)] === 0) {
+                    ctx.fillStyle = "#000000";
+                } else {
+                    ctx.fillStyle = "#ccffcc";
+                }
+
+                ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
+            }
+        }
     }
 }
 
 function myLoop () {
     setTimeout(function () {
-        if (shouldPause){
+        if (stopLoop){
             return;
         }
-        if (shouldDrawGame) {
-            drawGame();
-            myLoop();
+        if (isGameFinished) {
+            stopLoop = true;
+            document.getElementById('gameFinishedText').style.opacity = 1.0;
+            // alert("No changes will be further made to the grid - Game finished!");
+            return;
         }
-        else {
-            if (shouldDisplayAlert){
-                alert("Game finished!")
-                shouldDisplayAlert = false;
-            }
-        }
+       drawGame();
+       myLoop();
     },
     100);
 }
