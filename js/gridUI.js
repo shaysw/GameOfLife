@@ -1,5 +1,5 @@
 let ctx = null;
-const tileW = 40, tileH = 40;
+const tileW = 35, tileH = 35;
 const mapW = 20, mapH = 20;
 let currentGameMap;
 let settings = { };
@@ -41,61 +41,64 @@ function pause(){
 
 function start() {
     shouldDrawGame = false;
-    let threshold = Number(document.getElementById("threshold").value);
-    if (threshold == null || threshold < 0 || threshold > 100){
-        alert("Must be between 0-100");
-        return;
-    }
-    settings['threshold'] = threshold;
-    
-    let liveSlotMinLiveNeighboursToKeepAlive = Number(document.getElementById("liveSlotMinLiveNeighboursToKeepAlive").value);
-    if (liveSlotMinLiveNeighboursToKeepAlive == null || liveSlotMinLiveNeighboursToKeepAlive < 0 || liveSlotMinLiveNeighboursToKeepAlive > 8){
-        alert("Must be between 0-8");
-        return;
-    }
-    settings['liveSlotMinLiveNeighboursToKeepAlive'] = liveSlotMinLiveNeighboursToKeepAlive;
-
-    let liveSlotMaxLiveNeighboursToKeepAlive = Number(document.getElementById("liveSlotMaxLiveNeighboursToKeepAlive").value);
-    if (liveSlotMaxLiveNeighboursToKeepAlive == null || liveSlotMaxLiveNeighboursToKeepAlive < 0 || liveSlotMinLiveNeighboursToKeepAlive > 8){
-        alert("Must be between 0-8");
-        return;
-    }
-    settings['liveSlotMaxLiveNeighboursToKeepAlive'] = liveSlotMaxLiveNeighboursToKeepAlive;
-
-    let deadSlotMinLiveNeighboursToBringToLife = Number(document.getElementById("deadSlotMinLiveNeighboursToBringToLife").value);
-    if (deadSlotMinLiveNeighboursToBringToLife == null || deadSlotMinLiveNeighboursToBringToLife < 0 || deadSlotMinLiveNeighboursToBringToLife > 8){
-        alert("Must be between 0-8");
-        return;
-    }
-    settings['deadSlotMinLiveNeighboursToBringToLife'] = deadSlotMinLiveNeighboursToBringToLife;
-
-    let deadSlotMaxLiveNeighboursToBringToLife = Number(document.getElementById("deadSlotMaxLiveNeighboursToBringToLife").value);
-    if (deadSlotMaxLiveNeighboursToBringToLife == null || deadSlotMaxLiveNeighboursToBringToLife < 0 || deadSlotMaxLiveNeighboursToBringToLife > 8){
-        alert("Must be between 0-8");
-        return;
-    }
-    settings['deadSlotMaxLiveNeighboursToBringToLife'] = deadSlotMaxLiveNeighboursToBringToLife;
-
-    initGameMap();
-}
-
-
-
-function initGameMap() {
+    getSettingsFromForm();
     shouldDisplayAlert = true;
-    let xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.status == 200){
-            let responseText = xmlHttp.response;
-            currentGameMap = JSON.parse(responseText);
-            shouldDrawGame = true;
-            myLoop();
+    sendInitRequest();
+
+    function sendInitRequest() {
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.status == 200){
+                let responseText = xmlHttp.response;
+                currentGameMap = JSON.parse(responseText);
+                shouldDrawGame = true;
+                myLoop();
+            }
+        };
+        xmlHttp.open( "POST", `http://localhost:8090/init?time=${new Date().getTime()}`, false ); // false for synchronous request
+        xmlHttp.send(JSON.stringify(settings));
+        // todo: maybe raise exception if error show alert
+
+    }
+
+    function getSettingsFromForm() {
+        let threshold = Number(document.getElementById("threshold").value);
+        if (threshold == null || threshold < 0 || threshold > 100){
+            alert("Must be between 0-100");
+            return;
         }
-    };
-    xmlHttp.open( "POST", `http://localhost:8090/init?time=${new Date().getTime()}`, false ); // false for synchronous request
-    xmlHttp.send(JSON.stringify(settings));
-    // todo: maybe raise exception if error
+        settings['threshold'] = threshold;
+
+        let liveSlotMinLiveNeighboursToKeepAlive = Number(document.getElementById("liveSlotMinLiveNeighboursToKeepAlive").value);
+        if (liveSlotMinLiveNeighboursToKeepAlive == null || liveSlotMinLiveNeighboursToKeepAlive < 0 || liveSlotMinLiveNeighboursToKeepAlive > 8){
+            alert("Must be between 0-8");
+            return;
+        }
+        settings['liveSlotMinLiveNeighboursToKeepAlive'] = liveSlotMinLiveNeighboursToKeepAlive;
+
+        let liveSlotMaxLiveNeighboursToKeepAlive = Number(document.getElementById("liveSlotMaxLiveNeighboursToKeepAlive").value);
+        if (liveSlotMaxLiveNeighboursToKeepAlive == null || liveSlotMaxLiveNeighboursToKeepAlive < 0 || liveSlotMinLiveNeighboursToKeepAlive > 8){
+            alert("Must be between 0-8");
+            return;
+        }
+        settings['liveSlotMaxLiveNeighboursToKeepAlive'] = liveSlotMaxLiveNeighboursToKeepAlive;
+
+        let deadSlotMinLiveNeighboursToBringToLife = Number(document.getElementById("deadSlotMinLiveNeighboursToBringToLife").value);
+        if (deadSlotMinLiveNeighboursToBringToLife == null || deadSlotMinLiveNeighboursToBringToLife < 0 || deadSlotMinLiveNeighboursToBringToLife > 8){
+            alert("Must be between 0-8");
+            return;
+        }
+        settings['deadSlotMinLiveNeighboursToBringToLife'] = deadSlotMinLiveNeighboursToBringToLife;
+
+        let deadSlotMaxLiveNeighboursToBringToLife = Number(document.getElementById("deadSlotMaxLiveNeighboursToBringToLife").value);
+        if (deadSlotMaxLiveNeighboursToBringToLife == null || deadSlotMaxLiveNeighboursToBringToLife < 0 || deadSlotMaxLiveNeighboursToBringToLife > 8){
+            alert("Must be between 0-8");
+            return;
+        }
+        settings['deadSlotMaxLiveNeighboursToBringToLife'] = deadSlotMaxLiveNeighboursToBringToLife;
+    }
 }
+
 
 function getGameMapNextStep() {
     let xmlHttp = new XMLHttpRequest();
