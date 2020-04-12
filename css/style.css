@@ -31,6 +31,11 @@ input[type=number] {
     vertical-align: middle;
   }
 
+.right img {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+}
 .middle {
     width: 50%;
 }
