@@ -5,7 +5,7 @@ let currentGameMap;
 let settings = { };
 let isGameFinished = false;
 let stopLoop = false;
-let goServerUrl = "http://localhost:8090";
+let goServerUrl = "https://www.shayschwartzburd.net";
 
 window.onload = function () {
     ctx = document.getElementById('game').getContext("2d");
