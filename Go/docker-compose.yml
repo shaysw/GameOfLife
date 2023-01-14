@@ -1,6 +1,6 @@
 version: "3"
 services:
   game-of-life:
-    build: .
+    image: shaysw/my-site:game-of-life
     ports:
       - "8090:8090"
